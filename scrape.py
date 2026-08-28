@@ -62,6 +62,12 @@ def try_login(page, username, password):
 
     page.locator("input[type=password]").first.fill(password)
 
+    # Give Blazor's two-way data binding a moment to register the typed
+    # values server-side before we trigger the submit.
+    page.wait_for_timeout(500)
+
+    print(f"[login] about to submit, current url: {page.url}", file=sys.stderr)
+
     clicked = False
     for role_name in ["Sign in", "Log in", "Login"]:
         btn = page.get_by_role("button", name=re.compile(role_name, re.I))
@@ -72,6 +78,22 @@ def try_login(page, username, password):
     if not clicked:
         page.locator("button[type=submit]").first.click()
 
+    # A Blazor login click may not fire the kind of network activity that
+    # "networkidle" tracks, so wait for the actual, observable sign of
+    # success: the password field disappearing (we've left the login page).
+    try:
+        page.locator("input[type=password]").wait_for(state="detached", timeout=20000)
+    except PlaywrightTimeoutError:
+        try:
+            page.screenshot(path="debug_login_failed.png")
+        except Exception:
+            pass
+        raise RuntimeError(
+            f"Login did not navigate away from the login page (still on {page.url} "
+            "after clicking submit) - see debug_login_failed.png"
+        )
+
+    print(f"[login] left login page, current url: {page.url}", file=sys.stderr)
     page.wait_for_load_state("networkidle", timeout=20000)
 
 
