@@ -1,6 +1,7 @@
 name: Update tank levels
 
 on:
+  #re-triggering schedule registration
   schedule:
     # Every 30 minutes. GitHub's scheduler is best-effort and can run a
     # little late under load, but averages out close to this.
