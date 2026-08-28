@@ -5,7 +5,8 @@ on:
   schedule:
     # Every 30 minutes. GitHub's scheduler is best-effort and can run a
     # little late under load, but averages out close to this.
-    - cron: "3/33 * * * *"
+    - cron: "3 * * * *"
+    - cron: "33 * * * *"
   workflow_dispatch: {}
 
 permissions:
