@@ -23,7 +23,7 @@ import re
 import sys
 from datetime import datetime, timezone
 
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
 
 ACCULEVEL_URL = "https://tanklevels.co.uk/devices/b8QP6j0nVz97"
 RAIN_DIRECTOR_URL = "https://tanklevels.co.uk/devices/djn64XAk62AP"
@@ -35,10 +35,15 @@ LAST_UPDATE_PATTERN = re.compile(r"Last update received:\s*(.+)")
 
 
 def try_login(page, username, password):
-    """Best-effort login. If we land on a page with no password field,
-    the session is already authenticated and this is a no-op."""
-    if page.locator("input[type=password]").count() == 0:
-        return
+    """Best-effort login. The login form itself is rendered by the same
+    Blazor SignalR circuit as everything else on this site, so it doesn't
+    exist in the DOM immediately after page load - wait for it to appear
+    rather than checking once. If it genuinely never appears (already
+    authenticated, e.g. a reused session), that's a normal outcome too."""
+    try:
+        page.locator("input[type=password]").first.wait_for(state="visible", timeout=15000)
+    except PlaywrightTimeoutError:
+        return  # no login form showed up - assume already authenticated
 
     filled_user = False
     for selector in [
