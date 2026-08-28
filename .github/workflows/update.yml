@@ -31,12 +31,14 @@ jobs:
           TANKLEVELS_PASSWORD: ${{ secrets.TANKLEVELS_PASSWORD }}
         run: python scrape.py
 
-      - name: Upload debug screenshot on failure
+      - name: Upload debug screenshots on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: debug-failure
-          path: debug_failure.png
+          path: |
+            debug_failure.png
+            debug_login_failed.png
           if-no-files-found: ignore
 
       - name: Commit updated data.json
