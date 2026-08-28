@@ -157,7 +157,12 @@ def main():
 
     with sync_playwright() as p:
         browser = p.chromium.launch()
-        page = browser.new_page()
+        # The site formats "Last update received" client-side using the
+        # browser's local timezone. GitHub's runners default to UTC, which
+        # doesn't observe British Summer Time, so without this the times
+        # come out an hour behind what you see browsing from the UK.
+        context = browser.new_context(timezone_id="Europe/London")
+        page = context.new_page()
         try:
             result.update(read_acculevel_page(page, username, password))
             result.update(read_rain_director_page(page))
