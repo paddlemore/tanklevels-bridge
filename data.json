@@ -1,8 +1,8 @@
 {
-  "scraped_at": "2026-11-27T19:31:10.551915+00:00",
+  "scraped_at": "2026-11-27T20:00:30.365747+00:00",
   "rainwater_tank_level": 100.0,
-  "rainwater_tank_temp": 6.8,
-  "rainwater_tank_last_update": "27 November 2026 19:17",
-  "header_tank_level": 64.0,
-  "header_tank_last_update": "27 November 2026 19:09"
+  "rainwater_tank_temp": 6.2,
+  "rainwater_tank_last_update": "27 November 2026 19:46",
+  "header_tank_level": 54.0,
+  "header_tank_last_update": "27 November 2026 19:33"
 }
